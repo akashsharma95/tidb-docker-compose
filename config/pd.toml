@@ -72,7 +72,7 @@ tolerant-size-ratio = 5.0
 
 [replication]
 # The number of replicas for each region.
-max-replicas = 3
+max-replicas = 7
 # The label keys specified the location of a store.
 # The placement priorities is implied by the order of label keys.
 # For example, ["zone", "rack"] means that we should place replicas to

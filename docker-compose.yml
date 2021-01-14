@@ -59,7 +59,7 @@ services:
       - --log-file=/logs/pd2.log
     restart: on-failure
   tikv0:
-    image: pingcap/tikv:latest
+    image: akashsharma/tikv:flexible_raft
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -77,7 +77,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv1:
-    image: pingcap/tikv:latest
+    image: akashsharma/tikv:flexible_raft
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -95,7 +95,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv2:
-    image: pingcap/tikv:latest
+    image: akashsharma/tikv:flexible_raft
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -112,7 +112,78 @@ services:
       - "pd1"
       - "pd2"
     restart: on-failure
-
+  tikv3:
+    image: pingcap/tikv:latest
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv3:20160
+      - --data-dir=/data/tikv3
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv3.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  tikv4:
+    image: akashsharma/tikv:flexible_raft
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv4:20160
+      - --data-dir=/data/tikv4
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv4.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  tikv5:
+    image: akashsharma/tikv:flexible_raft
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv5:20160
+      - --data-dir=/data/tikv5
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv5.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  tikv6:
+    image: akashsharma/tikv:flexible_raft
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv6:20160
+      - --data-dir=/data/tikv6
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv6.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
   tidb:
     image: pingcap/tidb:latest
     ports:
@@ -131,45 +202,10 @@ services:
       - "tikv0"
       - "tikv1"
       - "tikv2"
-    restart: on-failure
-  tispark-master:
-    image: pingcap/tispark:latest
-    command:
-      - /opt/spark/sbin/start-master.sh
-    volumes:
-      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-    environment:
-      SPARK_MASTER_PORT: 7077
-      SPARK_MASTER_WEBUI_PORT: 8080
-    ports:
-      - "7077:7077"
-      - "8080:8080"
-    depends_on:
-      - "tikv0"
-      - "tikv1"
-      - "tikv2"
-    restart: on-failure
-  tispark-slave0:
-    image: pingcap/tispark:latest
-    command:
-      - /opt/spark/sbin/start-slave.sh
-      - spark://tispark-master:7077
-    volumes:
-      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-    environment:
-      SPARK_WORKER_WEBUI_PORT: 38081
-    ports:
-      - "38081:38081"
-    depends_on:
-      - tispark-master
-    restart: on-failure
-
-  tidb-vision:
-    image: pingcap/tidb-vision:latest
-    environment:
-      PD_ENDPOINT: pd0:2379
-    ports:
-      - "8010:8010"
+      - "tikv3"
+      - "tikv4"
+      - "tikv5"
+      - "tikv6"
     restart: on-failure
 
   # monitors
